@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 // const { GPT } = require('@openai/api');
-const authorization = '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';
+const authorization = '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';
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
     apiKey: authorization,
@@ -29,20 +29,20 @@ const Message = require(`${__dirname}/models/Message.js`)(sequelize)
 
 const options = 
     {
-        '1': 'Press 1 for Basic Vocabulary',
-        '2': 'Press 2 for Advanced Vocabulary',
-        '3': 'Press 3 to Play Vocabulary Games',
-        '4': 'Press 4 for Grammar Lessons',
-        '5': 'Press 5 for Pronunciation Exercises'
+        '100': 'Press 1 for Basic Vocabulary',
+        '101': 'Press 2 for Advanced Vocabulary',
+        '102': 'Press 3 to Play Vocabulary Games',
+        '103': 'Press 4 for Grammar Lessons',
+        '104': 'Press 5 for Pronunciation Exercises'
     }
 
 const resArr = 
     {
-        1: 'I want to learn Basic Vocabulary suggest me some words meanings',
-        2: 'I want to learn Advanced Vocabulary suggest me some words meanings',
-        3: 'I want to learn Play Vocabulary Games with you',
-        4: 'I want to learn Grammar Lessons with you',
-        5: 'I want to learn Pronunciation Exercises with you'
+        100: 'I want to learn Basic Vocabulary suggest me some words meanings',
+        101: 'I want to learn Advanced Vocabulary suggest me some words meanings',
+        102: 'I want to learn Play Vocabulary Games with you',
+        103: 'I want to learn Grammar Lessons with you',
+        104: 'I want to learn Pronunciation Exercises with you'
     }
 
 let chatHiatory = [
@@ -110,6 +110,7 @@ app.get('/getAllMessageForUser', async (req, res) => {
 
 app.post('/postMessage', async (req, res) => {
     try{
+        console.log(req.body, 'req.bodypostMessage')
   let { message, name } = req.body;
   let newUser = false;
 // const user = await sequelize.query(`select count(1) as count from users where name = '${name}'`,  { raw: true });
@@ -181,6 +182,12 @@ const completion = await openai.createChatCompletion({
     userid: user.id,
     role: "assistant",
 })
+// await Message.create({
+//     content: 'How Are you',
+//     // content: message.toString(),
+//     userid: user.id,
+//     role: "assistant",
+// })
 //   chatHiatory.push({"role": "assistant", content: completion.data.choices[0].message.content});
 
 
