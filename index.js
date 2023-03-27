@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 // const { GPT } = require('@openai/api');
-const authorization = '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';
+const authorization = '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';
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
     apiKey: authorization,
@@ -11,10 +11,17 @@ const _ = require('underscore');
 const openai = new OpenAIApi(configuration);
 
 const Sequelize = require('sequelize');
-const sequelize = new Sequelize('chatgptbot', 'adityakale', '', {
-    host: 'localhost',
-    port: 5432,
-    dialect: 'postgres',
+// const sequelize = new Sequelize('chatgptbot', 'adityakale', '', {
+//     host: 'localhost',
+//     port: 5432,
+//     dialect: 'postgres',
+//     logging: false
+// });
+
+const sequelize = new Sequelize('chatgptbot', 'admin', 'stxZme2l', {
+    host: 'mysql-118019-0.cloudclusters.net',
+    port: 10049,
+    dialect: 'mysql',
     logging: false
 });
 
@@ -38,22 +45,23 @@ const options =
 
 const resArr = 
     {
-        100: 'I want to learn Basic Vocabulary suggest me some words meanings',
-        101: 'I want to learn Advanced Vocabulary suggest me some words meanings',
-        102: 'I want to learn Play Vocabulary Games with you',
-        103: 'I want to learn Grammar Lessons with you',
-        104: 'I want to learn Pronunciation Exercises with you'
+        100: 'I want to learn Basic Vocabulary suggest me some words meanings in hindi',
+        101: 'I want to learn Advanced Vocabulary suggest me some words meanings in hindi',
+        102: 'I want to learn Play Vocabulary Games with you in hindi',
+        103: 'I want to learn Grammar Lessons with you in hindi',
+        104: 'I want to learn Pronunciation Exercises with you in hindi'
     }
 
 let chatHiatory = [
-    {"role": "system", "content": "You are a english teacher."},
-    {"role": "user", "content": "I am Pradip, a blue collar worker from india who knows hindi and I want to learn basic english.tell me some common sentences that i can use daily work and give their hindi explaination. "},
-    {"role": "assistant", "content": "Hello, Pradip. That's awesome! say start to start"}
+    {"role": "system", "content": "You are a Female english teacher. You understand hindi and hinglish inputs. you have to teach english to a blue worker. you have to accept both hindi and hinglish input and respond in hindi."},
+    {"role": "system", "content": "Always respond in hindi or hinglish as user does not know to read english"},
+    {"role": "user", "content": "I am a blue collar worker from india and i  know hindi and I want to learn basic english.tell me some common sentences that i can use daily work and give their hindi explaination. "},
+    {"role": "assistant", "content": "Hello"}
 ]
 
 const chatHiatoryCreate = [{role: "system", content: "You are a english teacher."},
-   {role: "user", content: "I am Pradip, a blue collar worker from india who knows hindi and I want to learn basic english.tell me some common sentences that i can use daily work and give their hindi explaination."},
-   {role: "assistant", content: "Hello, Pradip. That\'s awesome! say start to start"}
+   {role: "user", content: "I am a blue collar worker from india and i  know hindi and I want to learn basic english.tell me some common sentences that i can use daily work and give their hindi explaination."},
+   {role: "assistant", content: "Hello"}
 ]
 const app = express();
 const port = 3001;
@@ -89,6 +97,10 @@ app.get('/getAllMessageForUser', async (req, res) => {
                 name: name
             }
         })
+        if(!user) {
+            return res.json({messages: []})
+
+        }
 
         let messages = await Message.findAll({
             where: {
@@ -161,7 +173,7 @@ if(resArr[message]) {
     message = resArr[message];
 }
 
-chatHiatory.push({"role": "user", "content": message})
+chatHiatory.push({"role": "user", "content": message + '. and give your response in hindi or hinglish'})
 await Message.create({
     content: message.toString(),
     userid: user.id,
@@ -174,6 +186,7 @@ const completion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     //chat history
     messages: chatHiatory,
+    // max_tokens: 100
   });
 
   await Message.create({
