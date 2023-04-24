@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 // const { GPT } = require('@openai/api');
-const authorization = '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';
+const authorization = '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';
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
     apiKey: authorization,
@@ -33,7 +33,13 @@ const Message = require(`${__dirname}/models/Message.js`)(sequelize)
 
 // const User = sequelize.import('./models/User.js');
 // const Message = sequelize.import('./models/Message.js');
-
+   const resArrObj  = {
+        'I want to learn Basic Vocabulary suggest me some words meanings in hindi': 'Basic Vocabulary',
+        'I want to learn Advanced Vocabulary suggest me some words meanings in hindi': 'Advanced Vocabulary',
+        'I want to learn Play Vocabulary Games with you in hindi':'Play Vocabulary Games',
+        'I want to learn Grammar Lessons with you in hindi': 'Grammar Lessons',
+        'I want to learn Pronunciation Exercises with you in hindi':  'Pronunciation Exercises'
+    }
 const options = 
     {
         '100': 'Press 1 for Basic Vocabulary',
@@ -70,7 +76,9 @@ app.use(function(req, res, next) {
     res.header("Access-Control-Allow-Origin", "*"); // update to match 
     // the domain you will make the request from
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
+       res.header("Access-Control-Allow-Private-Network", "true");
+
+	next();
     });
 // const gpt = new GPT({
 //   apiKey: 'YOUR_API_KEY_HERE',
@@ -85,7 +93,7 @@ app.use(express.json());
 // }));
 
 app.use(cors({
-    origin: '*'
+    origin: ['http://ec2-100-25-22-198.compute-1.amazonaws.com:3000', '*']
 }));
 
 app.get('/getAllMessageForUser', async (req, res) => {
@@ -110,7 +118,11 @@ app.get('/getAllMessageForUser', async (req, res) => {
                 ['id', 'ASC']
             ],
         })
-    
+    	 _.each(messages, message => {
+            if(message && message.content && resArrObj[message.content]) {
+                message.content = resArrObj[message.content];
+            }
+        })
         // return messages;
         return res.json({messages})
 
