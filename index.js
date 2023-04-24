@@ -18,10 +18,19 @@ const Sequelize = require('sequelize');
 //     logging: false
 // });
 
-const sequelize = new Sequelize('chatgptbot', 'admin', 'stxZme2l', {
-    host: 'mysql-118019-0.cloudclusters.net',
-    port: 10049,
-    dialect: 'mysql',
+const datbaseConfig = {
+        "username": "mesl",
+        "password": "46m319UveTqag27WDawcLhf0xeOElLvF",
+        "database": "mesl_stg3",
+        "host": "10.0.1.251",
+        "dialect": "postgres",
+        "logging": false,
+        "pool": { "maxConnections": 10, "maxIdleTime": 30000},
+        "_comment": "connect to VPN, use host: 10.0.1.251, database: mesl_remote if you are using remote database to test"
+    };
+const sequelize = new Sequelize('mesl_stg3', 'mesl', '46m319UveTqag27WDawcLhf0xeOElLvF', {
+    host: '10.0.1.251',
+    dialect: 'postgres',
     logging: false
 });
 
@@ -135,19 +144,19 @@ app.get('/getAllMessageForUser', async (req, res) => {
 app.post('/postMessage', async (req, res) => {
     try{
         console.log(req.body, 'req.bodypostMessage')
-  let { message, name } = req.body;
+  let { message, name, userId } = req.body;
   let newUser = false;
 // const user = await sequelize.query(`select count(1) as count from users where name = '${name}'`,  { raw: true });
 let user  = await User.findOne({
     where: {
-        name: name
+       id: userId
     }
     
 })
 // console.log(JSON.stringify(user, null, 2));
 if(!user) {
     newUser = true;
-    user =await User.create({name});
+    user =await User.create({name, id: userId});
     // console.log(JSON.stringify(user, null, 2));
     // const toBeCreatedMessages = [];
     for(let key in chatHiatoryCreate) {

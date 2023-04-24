@@ -1,14 +1,14 @@
 const { Sequelize } = require("sequelize");
 
 module.exports = function(sequelize, DataTypes) {
-    return sequelize.define('User', {
+    return sequelize.define('Message', {
         id: {
             type: Sequelize.INTEGER,
             autoIncrement: true,
             primaryKey: true
         },
         userid: {
-            type: Sequelize.INTEGER
+            type: Sequelize.UUID
         },
         content: {
             type: Sequelize.STRING
@@ -16,9 +16,10 @@ module.exports = function(sequelize, DataTypes) {
         role: {
             type: Sequelize.STRING
         }    }, {
-        tableName: 'messages',
+        tableName: 'mitra_learn_messages',
         paranoid: false,
         syncOnAssociation: false,
         timestamps: false
     });
 };
+
