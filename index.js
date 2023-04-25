@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 
 // const { GPT } = require('@openai/api');
-const authorization = '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';
+const authorization = 'sk-sdewdwdwdwedwwwwdwdwwedwedwedw;
 const { Configuration, OpenAIApi } = require("openai");
 const configuration = new Configuration({
     apiKey: authorization,
@@ -107,11 +107,11 @@ app.use(cors({
 
 app.get('/getAllMessageForUser', async (req, res) => {
     try {
-        let name = req.query.name;
-        console.log(name, 'name');
+        let {name, userId }= req.query;
+       // console.log({name, id});
         let user  = await User.findOne({
             where: {
-                name: name
+                id: userId
             }
         })
         if(!user) {
@@ -147,13 +147,15 @@ app.post('/postMessage', async (req, res) => {
   let { message, name, userId } = req.body;
   let newUser = false;
 // const user = await sequelize.query(`select count(1) as count from users where name = '${name}'`,  { raw: true });
-let user  = await User.findOne({
+console.log(message, name, userId);
+	    let user  = await User.findOne({
     where: {
        id: userId
     }
     
 })
-// console.log(JSON.stringify(user, null, 2));
+
+	    console.log(JSON.stringify(user, null, 2));
 if(!user) {
     newUser = true;
     user =await User.create({name, id: userId});
@@ -200,9 +202,15 @@ await Message.create({
     userid: user.id,
     role: "user",
 })
-
+const finalArray = []
 console.log(JSON.stringify(chatHiatory, null, 2));
-
+if(chatHiatory.length > 10) {
+const firstFive = arr.slice(0, 5);
+const lastFive = arr.slice(-5);
+	finalArray.concat(firstFive)
+	finalArray.concat(lastFive)
+	chatHiatory = finalArray
+}
 const completion = await openai.createChatCompletion({
     model: "gpt-3.5-turbo",
     //chat history
